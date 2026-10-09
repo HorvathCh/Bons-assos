@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -43,7 +43,7 @@ async function fetchDetails(associationId: string): Promise<Details> {
 
 const memberName = (member: Member) => member.profile?.full_name || 'Sans nom';
 
-export default function AssociationScreen() {
+export default function AssociationMembers() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { session, isAdmin } = useAuth();
   const userId = session?.user.id;
@@ -97,9 +97,6 @@ export default function AssociationScreen() {
 
   return (
     <Screen>
-      <Stack.Screen options={{ title: association.name }} />
-      <Txt variant="title">{association.name}</Txt>
-      {association.description ? <Txt>{association.description}</Txt> : null}
       <Notice kind="error">{error || details.error}</Notice>
 
       {isAdmin ? null : (
