@@ -10,6 +10,8 @@ type AuthState = {
   session: Session | null;
   /** True until the stored session has been read. */
   loading: boolean;
+  /** False while the name and admin status of the signed-in user are being fetched. */
+  accountLoaded: boolean;
   fullName: string;
   /** Platform admin: the only one allowed to invite association leaders. */
   isAdmin: boolean;
@@ -75,6 +77,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       value={{
         session,
         loading,
+        accountLoaded: !userId || current !== null,
         fullName: current?.fullName ?? '',
         isAdmin: current?.isAdmin ?? false,
         refreshAccount,

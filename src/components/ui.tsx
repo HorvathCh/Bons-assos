@@ -1,9 +1,11 @@
-import type { PropsWithChildren } from 'react';
+import { useState, type PropsWithChildren, type ReactNode } from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   useColorScheme,
@@ -41,14 +43,30 @@ export function useTheme() {
   return palette[useColorScheme() === 'dark' ? 'dark' : 'light'];
 }
 
-export function Screen({ children }: PropsWithChildren) {
+type ScreenProps = PropsWithChildren<{
+  /** Enables pull-to-refresh; the spinner stays until the promise settles. */
+  onRefresh?: () => Promise<unknown>;
+}>;
+
+export function Screen({ children, onRefresh }: ScreenProps) {
   const theme = useTheme();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const refresh = async () => {
+    setRefreshing(true);
+    await onRefresh?.();
+    setRefreshing(false);
+  };
+
   return (
     <ScrollView
       style={{ backgroundColor: theme.background }}
       contentContainerStyle={styles.screen}
       contentInsetAdjustmentBehavior="automatic"
-      keyboardShouldPersistTaps="handled">
+      keyboardShouldPersistTaps="handled"
+      refreshControl={
+        onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={refresh} /> : undefined
+      }>
       {children}
     </ScrollView>
   );
@@ -146,6 +164,33 @@ export function Notice({ kind, children }: PropsWithChildren<{ kind: 'error' | '
   );
 }
 
+type SwitchRowProps = {
+  label: string;
+  hint?: ReactNode;
+  value: boolean;
+  disabled?: boolean;
+  onChange: (value: boolean) => void;
+};
+
+export function SwitchRow({ label, hint, value, disabled, onChange }: SwitchRowProps) {
+  const theme = useTheme();
+  return (
+    <View style={styles.switchRow}>
+      <View style={styles.switchText}>
+        <Txt>{label}</Txt>
+        {hint ? <Txt variant="secondary">{hint}</Txt> : null}
+      </View>
+      <Switch
+        accessibilityLabel={label}
+        value={value}
+        disabled={disabled}
+        onValueChange={onChange}
+        trackColor={{ true: theme.primary }}
+      />
+    </View>
+  );
+}
+
 export function Card({ children }: PropsWithChildren) {
   const theme = useTheme();
   return <View style={[styles.card, { backgroundColor: theme.surface }]}>{children}</View>;
@@ -192,5 +237,7 @@ const styles = StyleSheet.create({
   buttonLabel: { fontSize: 16, fontWeight: '600' },
   dimmed: { opacity: 0.6 },
   card: { borderRadius: 12, padding: 16, gap: 12 },
+  switchRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  switchText: { flex: 1 },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });
