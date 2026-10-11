@@ -75,7 +75,7 @@ export default function MyAssociations() {
         </Link>
       ))}
 
-      <Button title="S’abonner à une association" onPress={() => router.push('/subscribe')} />
+      <Button title="Gérer les abonnements" onPress={() => router.push('/subscribe')} />
     </Screen>
   );
 }

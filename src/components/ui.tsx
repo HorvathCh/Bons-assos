@@ -13,6 +13,7 @@ import {
   type TextInputProps,
   type TextProps,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const palette = {
   light: {
@@ -46,10 +47,13 @@ export function useTheme() {
 type ScreenProps = PropsWithChildren<{
   /** Enables pull-to-refresh; the spinner stays until the promise settles. */
   onRefresh?: () => Promise<unknown>;
+  /** Stays at the bottom of the screen, below the scrolling content. */
+  footer?: ReactNode;
 }>;
 
-export function Screen({ children, onRefresh }: ScreenProps) {
+export function Screen({ children, onRefresh, footer }: ScreenProps) {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
 
   const refresh = async () => {
@@ -58,9 +62,9 @@ export function Screen({ children, onRefresh }: ScreenProps) {
     setRefreshing(false);
   };
 
-  return (
+  const content = (
     <ScrollView
-      style={{ backgroundColor: theme.background }}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
       contentContainerStyle={styles.screen}
       contentInsetAdjustmentBehavior="automatic"
       keyboardShouldPersistTaps="handled"
@@ -69,6 +73,20 @@ export function Screen({ children, onRefresh }: ScreenProps) {
       }>
       {children}
     </ScrollView>
+  );
+  if (!footer) return content;
+
+  return (
+    <View style={[styles.scroll, { backgroundColor: theme.background }]}>
+      {content}
+      <View
+        style={[
+          styles.footer,
+          { borderTopColor: theme.border, paddingBottom: Math.max(insets.bottom, 12) },
+        ]}>
+        {footer}
+      </View>
+    </View>
   );
 }
 
@@ -206,6 +224,15 @@ export function Loading() {
 }
 
 const styles = StyleSheet.create({
+  scroll: { flex: 1 },
+  footer: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    width: '100%',
+    maxWidth: 560,
+    alignSelf: 'center',
+  },
   screen: {
     padding: 20,
     gap: 16,

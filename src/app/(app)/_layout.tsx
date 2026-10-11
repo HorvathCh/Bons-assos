@@ -9,7 +9,7 @@ export default function AppLayout() {
       <Stack.Screen name="index" options={{ title: 'Mes événements' }} />
       <Stack.Screen name="associations" options={{ title: 'Associations' }} />
       <Stack.Screen name="my-associations" options={{ title: 'Mes associations' }} />
-      <Stack.Screen name="subscribe" options={{ title: 'S’abonner' }} />
+      <Stack.Screen name="subscribe" options={{ title: 'Gérer les abonnements' }} />
       <Stack.Screen name="event/[eventId]" options={{ title: 'Événement' }} />
       <Stack.Screen name="association/[id]/index" options={{ title: 'Association' }} />
       <Stack.Screen name="association/[id]/edit" options={{ title: 'Informations' }} />

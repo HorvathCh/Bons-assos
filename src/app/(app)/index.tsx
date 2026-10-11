@@ -122,7 +122,15 @@ export default function MyEvents() {
   if (!agenda || !userId || !accountLoaded) return <Loading />;
 
   return (
-    <Screen onRefresh={() => fetchAgenda(userId).then(setAgenda)}>
+    <Screen
+      onRefresh={() => fetchAgenda(userId).then(setAgenda)}
+      footer={
+        <Button
+          title="Mes associations"
+          variant={agenda.followsAny ? 'secondary' : 'primary'}
+          onPress={() => router.push('/my-associations')}
+        />
+      }>
       <Stack.Screen
         options={{
           headerRight: () => (
@@ -172,12 +180,6 @@ export default function MyEvents() {
           </Pressable>
         </Link>
       ))}
-
-      <Button
-        title="Mes associations"
-        variant={agenda.followsAny ? 'secondary' : 'primary'}
-        onPress={() => router.push('/my-associations')}
-      />
     </Screen>
   );
 }
